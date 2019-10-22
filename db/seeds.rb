@@ -50,17 +50,18 @@ end
     $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
 end
 
-# create
+# seed your citizens
 25.times do
     Citizen.create(name: Faker::FunnyName.name, strength: rand(1..5), health: rand(5..15))
 end
 
+# seed your initiatives
 15.times do
     selected_pair = $final_array.sample
     Initiative.create(name: selected_pair[0], description: selected_pair[1])
 end
 
 # associate each citizen with two random initiatives
-Citizen.all do |citizen|
+Citizen.all.each do |citizen|
     citizen.supportTwoRandomInitiatives
 end
