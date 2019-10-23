@@ -7,7 +7,7 @@ class Citizen < ActiveRecord::Base
                    "annihilated", "vaporized", "wrecked", "crushed", "slayed", "opened a can of whoop-@ss on", 
                    "thrashed", "whipped", "pulverized" , "blew up", "KABLOOIED", "KBLAMO'd", "totally just HONK HONK'd all over"]
 
-    def self.Brawl()
+    def self.brawl()
         until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size <= 1 do # we only have one initiatives in play
             currentCitizen = Citizen.all.shuffle[0]
             conflictingCitizen = Citizen.all.detect do |otherCitizen|
@@ -24,8 +24,8 @@ class Citizen < ActiveRecord::Base
 
     def self.brawlSession(citizen1, citizen2)
         until citizen1.health <= 0 || citizen2.health <= 0
-        citizen1.health -= citizen2.strength
-        citizen2.health -= citizen1.strength
+        citizen1.health -= rand(1..citizen2.strength)
+        citizen2.health -= rand(1..citizen1.strength)
         citizen1.save
         citizen2.save
         end

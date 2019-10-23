@@ -1,12 +1,14 @@
 class TownHallBrawl
+    attr_accessor :difficulty, :tokens
 
-    def initiatilize(tokens = 3, points = 0, difficulty = 1)
+    def initialize(tokens = 3, points = 0, difficulty = 1)
         @tokens = tokens
         @points = points
         @difficulty = difficulty
     end
     
     $final_array = []
+    $difficulty_level = ["Civil", "Tense", "Uncomfortable", "Hostile", "Bad@ss"]
 
     def getUserInput
         puts "Enter your input below"
@@ -14,6 +16,7 @@ class TownHallBrawl
     end
 
     def gameStartup
+        puts ""
         puts "Welcome to Town Hall Brawl, a game about..."
         puts "friendship"
         puts "spaceships"
@@ -29,6 +32,7 @@ class TownHallBrawl
     end
 
     def gameMenuSelection
+        puts ""
         puts "Game Options (options are the numbers)"
         puts "-----------------------------------"
         puts ""
@@ -50,13 +54,14 @@ class TownHallBrawl
     end
 
     def startGameMenu
+        puts ""
         puts "Current Brawl Options (options are the numbers)"
         puts "-----------------------------------"
         puts ""
         puts "1. Read Overview"
-        puts "2. Change Difficulty (Current Difficulty Level)"
+        puts "2. Change Difficulty (Currently: #{$difficulty_level[self.difficulty - 1]})"
         puts "3. View Participants"
-        puts "4. Hedge Your Bet (Number of tokens left)"
+        puts "4. Hedge Your Bet (Tokens left: #{self.tokens} Tokens)"
         puts "5. BEGIN TOWN HALL BRAWL!"
         puts "6. End Game"
         puts ""
@@ -83,29 +88,83 @@ class TownHallBrawl
     end
 
     def startGameChangeDifficulty
-        # print Out Difficulties
-        
-        # 1. Civil (6 people - 6 * token modifier)
-        # 2. Tense (10 people - 10 * token modifier)
-        # 3. Uncomfortable (15 people - 15 * token modifier)
-        # 4. Hostile (20 people - 20 * token modifier)
-        # 5. Bad@ss (30 people - 30 * token modifier)
-        # 6. Back to menu
-        
-        # Prompt for value
-        # Run Switch/Case
+        puts ""
+        puts "Game Difficulty Options (options are the numbers)"
+        puts "NOTE: This resets the entire brawl (including tokens)"
+        puts "-----------------------------------"
+        puts ""
+        puts "1. Civil (6 people: Score = 6 * token modifier)"
+        puts "2. Tense (10 people: Score = 10 * token modifier)"
+        puts "3. Uncomfortable (15 people: Score = 15 * token modifier)"
+        puts "4. Hostile (20 people: Score = 20 * token modifier)"
+        puts "5. Bad@ss (30 people: Score = 30 * token modifier)"
+        puts "6. Back To Menu (Make No Changes)"
+        puts ""
+
+        menuSelection = getUserInput
+
+        case menuSelection
+        when '1'
+            @difficulty = 1
+            populateTownHall(6)
+        when '2'
+            @difficulty = 2
+            populateTownHall(10)
+        when '3'
+            @difficulty = 3
+            populateTownHall(15)
+        when '4'
+            @difficulty = 4
+            populateTownHall(20)
+        when '5'
+            @difficulty = 5
+            populateTownHall(30)
+        when '6'
+            puts "But the MAYOR asked for this meeting! You can't just LEAVE!"
+        else
+            puts "Errrr... You typed #{menuSelection}, try again!"
+            startGameMenu
+        end
+    end
+
+    def populateTownHall(number_of_citizens)
+
     end
 
     def startGameReadOverview
-        # print the overview
-        
-        # Loop back to startGameMenu
+        puts ""
+        puts "How Town Hall Brawl Works"
+        puts "-----------------------------------"
+        puts "Choose A Difficulty: How many citizens will be fighting for their initiative - Harder = More Points"
+        puts "View The Room: See all the citizens, how strong they are, and what they support"
+        puts "      - This will help you make a decision on what initiative might win out"
+        puts "Hedge Your Bets: Use your tokens to slightly tip the odds in your favor by"
+        puts "      - Arrest (delete) a citizen to reduce the strength of a specific initative"
+        puts "      - Confuse (update) all the citizens' initiatives to re-roll if the initative distribution is too even"
+        puts "      - Include (add) a citizen (higher chance of better stats) to make the distribution more skewed"
+        puts "Brawl it OUT: When you feel confident to make a guess, start the brawl, make a guess, and score points (if correct)"
+        puts ""
+        puts "Point System"
+        puts "-----------------------------------"
+        puts "If Correct: (number_of_tokens_leftover) * (total_citizens_in_room)"
+        puts "If Not Correct: 0"
+        puts ""
+        puts "Press any key to go back to the game menu"
+        puts ""
+
+
+        if getUserInput
+            startGameMenu
+        end
+  
     end
 
     def startGameViewParticipants
-        # print out a list of participants and their initiatives
+        puts ""
+        puts "Current Citizens In The Room"
+        puts "-----------------------------------------"
         
-        # Loop back to the startGameMenu
+        Citizen.displayCitizenBeliefs
     end
 
     def startGameHedgeBetsMenu
@@ -113,8 +172,8 @@ class TownHallBrawl
         # provide a list of options
         
         # 1. Arrest Citizen (remove citizen)
-        # 2. Confuse Citizen (change citizen's initiative)
-        # 3. Supercharge Citizen (Increase citizen's health and strength)
+        # 2. Confuse Citizens (change citizen's initiative)
+        # 3. Insert yourself (Increase citizen's health and strength)
         # 4. Go back to start game menu
 
         # switch/case
@@ -167,6 +226,10 @@ class TownHallBrawl
         # y - start again and reset tokens and points and database
         # n - exit message and end program
         # else "I don't understand what you mean, so you must want to keep playing" - start again anyway
+    end
+
+    def endGame
+
     end
 
     def createInitiativeVariations(numberOf)
