@@ -3,35 +3,36 @@ class Citizen < ActiveRecord::Base
     has_many :initiatives, through: :advocacies # relationship - a citizen has many initiatives through advocacies
 
     # creates two new advocacy associations linked to random initatives and assigns them to this citizen
-    def supportTwoRandomInitiatives
-        list_of_ids = Initiative.all.map {|initiative| initiative.id} # get a list of ids for all the initiatives
 
-        init_id1 = list_of_ids.sample # get a random id for the first initative to assign
-        init_id2 = init_id1 # set the second id to the first id (to pass the condition below)
-        
-        # until the second initiative is not the same (id) as the first initiative
-        until init_id2 != init_id1 do 
-            init_id2 = list_of_ids.sample # randomize the second initiative
-        end
+    def self.Brawl()
+        until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size == 2 do # we only have two initiatives in play
+            currentCitizen = Citizen.all.shuffle[0]
+            conflictingCitizen = Citizen.all.detect do |otherCitizen|
+                currentCitizen.initiatives != otherCitizen.initiatives
+            end
 
-        # take two associations (one for both initiatives and this citizen)
-        Advocacy.create(citizen: self, initiative: Initiative.find(init_id1))
-        Advocacy.create(citizen: self, initiative: Initiative.find(init_id2))  
-    end
-
-    def self.Brawl(citizen_array)
-        if Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size == 2 # we only have two initiatives in play
-            return citizen_array
-        else 
-            citizens_in_brawl = citizen_array.shuffle
             binding.pry
-        end# else, lets make people fight
-            # citizens_in_brawl = citizen_array.shuffle # lets shuffle the citizens who are alive
-            # citizen_of_focus = citizens_in_brawl[0] # lets grab the first citizen
-            # citizens_in_brawl.each do |citizen| # make the citizen citizen_of_focus fight the first citizen with dissimilar values
-            #     if (citizen.initiatives == citizen[0].initiatives)
-            #         binding.pry
-            #     end
-            # end
+
+            if conflictingCitizen
+                brawlSession(currentCitizen, conflictingCitizen)
+            end
+        end
     end
+
+    def self.brawlSession(citizen1, citizen2)
+        citizen1.health -= citizen2.strength
+        citizen2.health -= citizen1.strength
+        citizen1.save
+        citizen2.save
+
+        if (citizen1.health > 0 && citizen2.health <= 0)
+            destroy(citizen2.id)
+        elsif (citizen1.health <= 0 && citizen2.health > 0)
+            destroy(citizen1.id)
+        elsif (citizen1.health <= 0 && citizen2.health <= 0)
+            destroy(citizen1.id)
+            destroy(citizen2.id)
+        end # neither citizens destroyed each other
+    end
+
 end

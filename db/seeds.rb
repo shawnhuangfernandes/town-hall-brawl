@@ -17,36 +17,36 @@ $message_array = #create a new message array full of random initiative messages
     "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"
 ]
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Name.first_name} the #{Faker::Creature::Animal.name} turn the music down!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Verb.ing_form} illegal on Mondays!"]
 
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Subsidize #{Faker::Food.dish} stands to attract more #{Faker::Company.profession}s to our town!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Increase surveillance on the #{Faker::Dessert.variety} cult!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Update the swimming pool's safety board language to #{Faker::Nation.language}!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Prevent the #{Faker::Space.agency} from parking their #{Faker::Space.launch_vehicle} in my yard!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "Make it legal for me to drive my #{Faker::Construction.heavy_equipment} across the baseball field!"]
 end
 
-3.times do
+1.times do
     $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
 end
 
@@ -56,12 +56,12 @@ end
 end
 
 # seed your initiatives
-15.times do
+6.times do
     selected_pair = $final_array.sample
     Initiative.create(name: selected_pair[0], description: selected_pair[1])
 end
 
 # associate each citizen with two random initiatives
 Citizen.all.each do |citizen|
-    citizen.supportTwoRandomInitiatives
+    Advocacy.create(citizen: citizen, initiative: Initiative.all.sample)
 end
