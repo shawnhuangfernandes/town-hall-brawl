@@ -1,8 +1,15 @@
 class TownHallBrawl
 
+    def initiatilize(tokens = 3, points = 0, difficulty = 1)
+        @tokens = tokens
+        @points = points
+        @difficulty = difficulty
+    end
+    
     $final_array = []
 
     def getUserInput
+        puts "Enter your input below"
         gets.chomp
     end
 
@@ -15,6 +22,10 @@ class TownHallBrawl
         puts "really adorable violence"
         puts "and... democracy!"
         puts "Made by Shawn Huang Fernandes"
+        puts ""
+        
+        
+        gameMenuSelection
     end
 
     def gameMenuSelection
@@ -22,20 +33,53 @@ class TownHallBrawl
         puts "-----------------------------------"
         puts ""
         puts "1. Start Game"
-        puts "2. Stop Playing"  
+        puts "2. Stop Playing"
+        puts ""
+        
+        menuSelection = getUserInput
+
+        case menuSelection
+        when '1'
+            startGameMenu
+        when '2'
+            puts "Fine. Whatever. I didn't want to play anyway!"
+        else
+            puts "Errrr... You typed #{menuSelection}, try again!"
+            gameMenuSelection
+        end
     end
 
     def startGameMenu
-        # this prints the options when you start a game
-        
-        # 1. Read Overview
-        # 2. Change Difficulty (Current Difficulty Level)
-        # 3. View Participants
-        # 4. Hedge Your Bet (Number of tokens left)
-        # 5. BEGIN TOWN HALL BRAWL!
+        puts "Current Brawl Options (options are the numbers)"
+        puts "-----------------------------------"
+        puts ""
+        puts "1. Read Overview"
+        puts "2. Change Difficulty (Current Difficulty Level)"
+        puts "3. View Participants"
+        puts "4. Hedge Your Bet (Number of tokens left)"
+        puts "5. BEGIN TOWN HALL BRAWL!"
+        puts "6. End Game"
+        puts ""
 
-        # Prompt for value
-        # Run Switch/Case
+        menuSelection = getUserInput
+
+        case menuSelection
+        when '1'
+            startGameReadOverview
+        when '2'
+            startGameChangeDifficulty
+        when '3'
+            startGameViewParticipants
+        when '4'
+            startGameHedgeBetsMenu
+        when '5'
+            startGameBeginBrawl
+        when '6'
+            puts "But the MAYOR asked for this meeting! You can't just LEAVE!"
+        else
+            puts "Errrr... You typed #{menuSelection}, try again!"
+            startGameMenu
+        end
     end
 
     def startGameChangeDifficulty
