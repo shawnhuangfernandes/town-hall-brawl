@@ -5,7 +5,7 @@ class Citizen < ActiveRecord::Base
     ACTION_VERB = ["obliterated", "eviscerated", "eliminated", "absolutely mopped the floor with", "bamboozled",
                    "creamed", "wasted", "destroyed", "physically-vetoed", "pwned", "clobbered", "sliced n' diced",
                    "annihilated", "vaporized", "wrecked", "crushed", "slayed", "opened a can of whoop-@ss on", 
-                   "thrashed", "whipped", "pulverized" , "blew up", "KABLOOIED", "KBLAMO'd", "totally just HONK HONK'd all over"]
+                   "thrashed", "whipped", "pulverized" , "blew up", "KABLOOIED", "KABLAMO'd", "totally just HONK HONK'd all over"]
 
     def self.brawl()
         until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size <= 1 do # we only have one initiatives in play

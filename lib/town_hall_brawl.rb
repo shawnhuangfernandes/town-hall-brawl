@@ -1,9 +1,10 @@
 class TownHallBrawl
-    attr_accessor :difficulty, :tokens
+    attr_accessor :difficulty, :tokens, :score, :gamesLeftToPlay, :points
 
-    def initialize(tokens = 3, points = 0, difficulty = 1, gamesLeftToPlay = 5)
+    def initialize(tokens = 3, points = 0, difficulty = 1, gamesLeftToPlay = 5, score = 0)
         @tokens = tokens
         @points = points
+        @score = score
         @difficulty = difficulty
         @gamesLeftToPlay = gamesLeftToPlay
 
@@ -12,6 +13,8 @@ class TownHallBrawl
     
     $final_array = []
     $difficulty_level = ["Civil", "Tense", "Uncomfortable", "Hostile", "Bad@ss"]
+    MAX_TOKENS = 3
+    MAX_ROUNDS = 5
 
     def getUserInput
         print "Enter your input: "
@@ -30,9 +33,14 @@ class TownHallBrawl
         puts "and... democracy!"
         puts "Made by Shawn Huang Fernandes"
         puts ""
+
+        puts "Press any key to proceed to the game menu"
+        puts ""
+
+        if getUserInput
+            gameMenuSelection
+        end
         
-        
-        gameMenuSelection
     end
 
     def gameMenuSelection
@@ -133,8 +141,6 @@ class TownHallBrawl
             puts "Errrr... You typed #{menuSelection}, try again!"
             startGameChangeDifficulty
         end
-
-        startGameMenu
     end
 
     def startGameReadOverview
@@ -218,7 +224,6 @@ class TownHallBrawl
                 startGameMenu
             end
         end
-        startGameMenu
     end
 
     def startGameArrestCitizen
@@ -242,8 +247,15 @@ class TownHallBrawl
             puts ""
             startGameMenu
         elsif Citizen.getCitizenNames.include?(citizenNameRequest)
+            puts "#{citizenNameRequest} was dragged out of town hall by the police!"
+            
+            Citizen.find_by(name: citizenNameRequest).advocacies[0].destroy
             Citizen.find_by(name: citizenNameRequest).destroy
             self.tokens -= 1
+            
+            if getUserInput
+                startGameMenu
+            end
         else
             puts "#{citizenNameRequest} isn't in Town Hall today, lucky biscuit. Pick again!"
             startGameArrestCitizen
@@ -294,7 +306,6 @@ class TownHallBrawl
         puts "Press any key to go back to the game menu"
         puts ""
 
-
         if getUserInput
             startGameMenu
         end
@@ -320,17 +331,40 @@ class TownHallBrawl
                          initiative: Initiative.all.sample)
             puts "#{newAdvocacy.citizen.name} comes strutting into townhall and announces 'I believe in #{newAdvocacy.initiative.name}': #{newAdvocacy.initiative.description}"
             puts ""
-            
+
+            puts "Press any key to go back to the game menu"
+            puts ""
+    
             self.tokens -= 1
+
+            if getUserInput
+                startGameMenu
+            end
+            
+
         end
     end
 
     def startGameBeginBrawl
         brawlIntro
         input = brawlChooseInitiative
-        beginBrawl(input)
-        
-        
+        pointsScoredThisRound = beginBrawl(input)
+
+        self.score += pointsScoredThisRound
+
+        puts "Your score after the town hall brawl is #{score}."
+        self.gamesLeftToPlay -= 1
+        puts "You have #{self.gamesLeftToPlay} rounds left!"
+
+        puts "Press any key to go back to play the next round"
+        self.tokens = MAX_TOKENS
+        populateTownHall
+        puts ""
+
+        if getUserInput
+            startGameMenu
+        end
+           
     end
 
     def brawlIntro
@@ -382,7 +416,9 @@ class TownHallBrawl
                 self.difficulty + self.difficulty * self.tokens
 
             else
-                puts "you lost!"
+                puts "You lost!"
+                puts "Points This Round: 0"
+                0
             end
     end
 
@@ -411,7 +447,7 @@ class TownHallBrawl
 
     def createCitizens(numberOf)
         numberOf.times do
-            Citizen.create(name: Faker::FunnyName.name, strength: rand(1..25), health: rand(15..100))
+            Citizen.create(name: Faker::FunnyName.name, strength: rand(10..35), health: rand(30..100))
         end
 
         Citizen.all.each do |citizen|
@@ -433,7 +469,7 @@ class TownHallBrawl
     end
 
     def clearGameStats
-        self.tokens = 3
+        self.tokens = MAX_TOKENS
     end
 
     def clearMatchStats
