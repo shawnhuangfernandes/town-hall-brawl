@@ -46,7 +46,7 @@ class TownHallBrawl
         when '1'
             startGameMenu
         when '2'
-            puts "Fine. Whatever. I didn't want to play anyway!"
+            endGame
         else
             puts "Errrr... You typed #{menuSelection}, try again!"
             gameMenuSelection
@@ -80,7 +80,7 @@ class TownHallBrawl
         when '5'
             startGameBeginBrawl
         when '6'
-            puts "But the MAYOR asked for this meeting! You can't just LEAVE!"
+            endGame
         else
             puts "Errrr... You typed #{menuSelection}, try again!"
             startGameMenu
@@ -205,47 +205,82 @@ class TownHallBrawl
                 startGameMenu
             end
         end
-
-        if self.tokens > 0
-            self.tokens -= 1
-        end
         startGameMenu
     end
 
     def startGameArrestCitizen
-        puts "ARRESTING!"
-        # provide a list of citizens
-        # prompt user for a citizen name whom they want to arrest
+        puts "NOTE: This will reduce your available tokens by 1"
+        puts "--------------------------------------------------------"
+        puts "type 'q' to go back the the game manu"
+        puts "Here's the list of citizens in town hall today:"
+        puts ""
 
-        # if the name is valid
-        # remove that citizen from the database
-        # else
-        # startGameArrestCitizen
+        Citizen.displayCitizenBeliefs
+
+        puts ""
+        puts "Who do you want to arrest? They all look like scumbags to me..."
+        puts ""
+
+        citizenNameRequest = getUserInput
+
+        if citizenNameRequest == 'q'
+            puts ""
+            startGameMenu
+        elsif Citizen.getCitizenNames.include?(citizenNameRequest)
+            Citizen.find_by(name: citizenNameRequest).destroy
+            self.tokens -= 1
+        else
+            puts "#{citizenNameRequest} isn't in Town Hall today, lucky biscuit. Pick again!"
+            startGameArrestCitizen
+        end
     end
 
     def startGameConfuseCitizens
-        puts "CONFUSING"
-        # Ask if they want to confuse all the citizens
+        puts "NOTE: This will reduce your available tokens by 1"
+        puts "--------------------------------------------------------"
+        puts ""
 
-        # if yes
-        # reroll everyone's initiatives
-        # if no
-        # go back to startGameMenu
-        # else
-        # re do confuse citizens
+        puts "Would you like to confuse all the citizens? (re-roll their initiatives)"
+        puts "type 'y' for YES or 'n' for NO (go back to menu)"
+
+        confuseCitizens = getUserInput
+
+        case confuseCitizens
+        when 'y'
+            confuseAllCitizens
+        when 'n'
+            startGameMenu
+        else
+            puts "You said #{confuseCitizens}, which is invalid, try again!"
+            startGameConfuseCitizens
+        end
+        
+
+    end
+
+    def confuseAllCitizens
+        puts "All the citizens in town hall came in with these beliefs"
+        puts ""
+        Citizen.displayCitizenBeliefs
+        puts ""
+        Citizen.doSomePolitics
+        puts "You confuse them with poltical jargon like:"
+        puts "#{Faker::Marketing.buzzwords}"
+        puts "#{Faker::Marketing.buzzwords}"
+        puts "#{Faker::Marketing.buzzwords}"
+        puts "#{Faker::Marketing.buzzwords}" 
+        puts ""
+        puts "Now their beliefs are:"
+        puts ""
+        Citizen.displayCitizenBeliefs
+        
+        self.tokens -= 1
     end
 
     def startGameAddAngryCitizen
-        puts "ADDING!"
-        # provide a list of citizens
-        # prompt user for a citizen name whom they want to supercharge
+        puts "Add A Citizen to the Bloodba- I mean Debate"
+        puts "-----------------------------------------------"
 
-        # if the name is valid
-        # supercharge that citizen
-        # elsif wants to exit
-        # back to startGameMenu
-        # else
-        # not valid input re do supercharge
     end
 
     def startGameBeginBrawl
@@ -266,7 +301,7 @@ class TownHallBrawl
     end
 
     def endGame
-
+        exit
     end
 
     def createInitiativeVariations(numberOf)

@@ -53,4 +53,15 @@ class Citizen < ActiveRecord::Base
             puts "#{citizen.name} supports #{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
         end
     end
+
+    def self.getCitizenNames
+        Citizen.all.map {|citizen| citizen.name}
+    end
+
+    def self.doSomePolitics
+        Advocacy.all.each do |advocacy| 
+            advocacy.initiative = Initiative.all.sample
+            advocacy.save
+        end
+    end
 end
