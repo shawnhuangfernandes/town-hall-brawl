@@ -19,7 +19,12 @@ class Citizen < ActiveRecord::Base
             end
         end
 
-        puts "The initative that's going to pass is: #{Citizen.all.first.initiatives[0].name} : #{Citizen.all.first.initiatives[0].description}"
+        if (Citizen.all.count == 0)
+            puts "Well, this is awkward... looks like everyone #{ACTION_VERB.sample} each other. Nobody's left!"
+        else
+            puts "The initative that's going to pass is #{Citizen.all.first.initiatives[0].name} : #{Citizen.all.first.initiatives[0].description}"
+            Citizen.all.first.initiatives[0].name.split[1]
+        end
     end
 
     def self.brawlSession(citizen1, citizen2)

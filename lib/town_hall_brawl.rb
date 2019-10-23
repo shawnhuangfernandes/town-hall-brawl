@@ -5,13 +5,15 @@ class TownHallBrawl
         @tokens = tokens
         @points = points
         @difficulty = difficulty
+
+        populateTownHall(6)
     end
     
     $final_array = []
     $difficulty_level = ["Civil", "Tense", "Uncomfortable", "Hostile", "Bad@ss"]
 
     def getUserInput
-        puts "Enter your input below"
+        print "Enter your input: "
         gets.chomp
     end
 
@@ -131,10 +133,6 @@ class TownHallBrawl
         end
 
         startGameMenu
-    end
-
-    def populateTownHall(number_of_citizens)
-
     end
 
     def startGameReadOverview
@@ -326,7 +324,32 @@ class TownHallBrawl
     end
 
     def startGameBeginBrawl
-        puts "BEGIN BRAWL!"
+        system("clear")
+        puts ""
+        puts "Everybody please take your seats! Deliberations are about to begin"
+        puts ""
+
+        townHallRandomEvents
+
+        puts "Here are the initiatives by name:"
+        puts "----------------------------------"
+        uniqueInitiativeNames = Citizen.all.map {|citizen| citizen.initiatives[0].name_and_description}.uniq
+        uniqueInitiativeNames.each do |initiative_string|
+            puts initiative_string
+        end
+
+        puts ""
+        puts "Enter the initiative's number (e.g 1328) which you think will win"
+        puts ""
+
+        initiativeNumber = getUserInput
+
+        if uniqueInitiativeNames.map {|initiative_string| initiative_string.split[1]}.include?(initiativeNumber)
+            Citizen.brawl
+        else
+            puts "You entered #{initiativeNumber}, which is invalid, try again!"
+
+        end
         # have the user select an initiative by number - the one they think will be the last one
         # run Brawl
         # check to see if they are right
@@ -342,25 +365,30 @@ class TownHallBrawl
         # else "I don't understand what you mean, so you must want to keep playing" - start again anyway
     end
 
+    def townHallRandomEvents
+
+    end
+
     def endGame
         exit
     end
 
     def createInitiativeVariations(numberOf)
         numberOf.times do
-            $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Name.first_name} the #{Faker::Creature::Animal.name} turn the music down!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Verb.ing_form} illegal!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Subsidize #{Faker::Food.dish} stands to attract more #{Faker::Company.profession}s to our town!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Increase surveillance on the #{Faker::Dessert.variety} cult!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Update the swimming pool's safety board language to #{Faker::Nation.language}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Prevent the #{Faker::Space.agency} from parking their #{Faker::Space.launch_vehicle} in my yard!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Make it legal for me to drive my #{Faker::Construction.heavy_equipment} across the baseball field!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Genetically clone #{Faker::Science.scientist} and send them to #{Faker::Space.planet}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Promote Salty Joe to #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Award #{rand(1..400000)} points to #{Faker::Movies::HarryPotter.house}!"]
-
+            $final_array << ["#{assignRandomInitiativeNumber}", "Make #{Faker::Name.first_name} the #{Faker::Creature::Animal.name} turn the music down!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Make #{Faker::Verb.ing_form} illegal!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Subsidize #{Faker::Food.dish} stands to attract more #{Faker::Company.profession}s to our town!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Increase surveillance on the #{Faker::Dessert.variety} cult!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Update the swimming pool's safety board language to #{Faker::Nation.language}!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Prevent the #{Faker::Space.agency} from parking their #{Faker::Space.launch_vehicle} in my yard!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Make it legal for me to drive my #{Faker::Construction.heavy_equipment} across the baseball field!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Genetically clone #{Faker::Science.scientist} and send them to #{Faker::Space.planet}!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Promote Salty Joe to #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Award #{rand(1..400000)} points to #{Faker::Movies::HarryPotter.house}!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "All #{Faker::Creature::Animal.name}s should be knighted!"]
+            $final_array << ["#{assignRandomInitiativeNumber}", "Those citizens wearing or having worn highly reflective sunglasses after sundown in the summer while standing in or near the front row of a concert (rock or otherwise) shall be asked to reimburse the artists responsible for the concert in a monetary amount equivalent to or exceeding the correlated emotional damages incurred by the artist from being coerced into the sightline of a person of a demonstrably higher level of cool than themselves."]
         end
     end
 
@@ -374,10 +402,33 @@ class TownHallBrawl
         end
     end
 
-    def createInitiativesFromTypes(numberOf)
+    def createInitiativesFromVariations(numberOf)
         numberOf.times do
             selected_pair = $final_array.sample
             Initiative.create(name: selected_pair[0], description: selected_pair[1])
         end
+    end
+
+    def clearTownHall()
+        Advocacy.destroy_all
+        Citizen.destroy_all
+        Initiative.destroy_all
+    end
+
+    def populateTownHall(number_of_citizens)
+        clearTownHall
+        createInitiativeVariations(4)
+        createInitiativesFromVariations(10)
+        createCitizens(number_of_citizens)
+    end
+
+    def assignRandomInitiativeNumber
+        initiativeString = "Initiative #{rand(1..2000)}"
+
+        until !$final_array.flatten.include?(initiativeString) do
+            initiativeString = "Initiative #{rand(1..2000)}"    
+        end
+
+        initiativeString
     end
 end
