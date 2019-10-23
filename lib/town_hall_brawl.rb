@@ -120,11 +120,13 @@ class TownHallBrawl
             @difficulty = 5
             populateTownHall(30)
         when '6'
-            puts "But the MAYOR asked for this meeting! You can't just LEAVE!"
+            startGameMenu
         else
             puts "Errrr... You typed #{menuSelection}, try again!"
-            startGameMenu
+            startGameChangeDifficulty
         end
+
+        startGameMenu
     end
 
     def populateTownHall(number_of_citizens)
@@ -165,21 +167,53 @@ class TownHallBrawl
         puts "-----------------------------------------"
         
         Citizen.displayCitizenBeliefs
+
+        puts ""
+        startGameMenu
     end
 
     def startGameHedgeBetsMenu
-        # list out the number of tokens a user has left
-        # provide a list of options
+        puts ""
+        puts "Bet Hedging Menu - #{self.tokens} left"
+        puts "-----------------------------------"
+        puts ""
+        puts "1. Arrest Citizen (remove citizen)"
+        puts "2. Confuse Citizens (randomize all citizens' initiatives)"
+        puts "3. Insert Angry Citizen (create a new strong citizen - random initiative)"
+        puts "4. Back To Game Menu"
+        puts ""
         
-        # 1. Arrest Citizen (remove citizen)
-        # 2. Confuse Citizens (change citizen's initiative)
-        # 3. Insert yourself (Increase citizen's health and strength)
-        # 4. Go back to start game menu
+        if self.tokens > 0
+            menuSelection = getUserInput
 
-        # switch/case
+            case menuSelection
+            when '1'
+                startGameArrestCitizen
+            when '2'
+                startGameConfuseCitizens
+            when '3'
+                startGameAddAngryCitizen
+            when '4'
+                startGameMenu
+            else
+                puts "Errrr... You typed #{menuSelection}, try again!"
+                startGameHedgeBetsMenu
+            end
+        else
+            puts "You are out of tokens, press any key to go back to the game menu"
+            if getUserInput
+                startGameMenu
+            end
+        end
+
+        if self.tokens > 0
+            self.tokens -= 1
+        end
+        startGameMenu
     end
 
     def startGameArrestCitizen
+        puts "ARRESTING!"
         # provide a list of citizens
         # prompt user for a citizen name whom they want to arrest
 
@@ -190,6 +224,7 @@ class TownHallBrawl
     end
 
     def startGameConfuseCitizens
+        puts "CONFUSING"
         # Ask if they want to confuse all the citizens
 
         # if yes
@@ -200,7 +235,8 @@ class TownHallBrawl
         # re do confuse citizens
     end
 
-    def startGameSuperchargeCitizen
+    def startGameAddAngryCitizen
+        puts "ADDING!"
         # provide a list of citizens
         # prompt user for a citizen name whom they want to supercharge
 
@@ -213,6 +249,7 @@ class TownHallBrawl
     end
 
     def startGameBeginBrawl
+        puts "BGIN BRAWL!"
         # have the user select an initiative by number - the one they think will be the last one
         # run Brawl
         # check to see if they are right
