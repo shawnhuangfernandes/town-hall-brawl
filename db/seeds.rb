@@ -8,7 +8,7 @@ $final_array = []
 def createInitiativeVariations(numberOf)
     numberOf.times do
         $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Name.first_name} the #{Faker::Creature::Animal.name} turn the music down!"]
-        $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Verb.ing_form} illegal on Mondays!"]
+        $final_array << ["Initiative #{rand(1..2000)}", "Make #{Faker::Verb.ing_form} illegal!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Subsidize #{Faker::Food.dish} stands to attract more #{Faker::Company.profession}s to our town!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Increase surveillance on the #{Faker::Dessert.variety} cult!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Update the swimming pool's safety board language to #{Faker::Nation.language}!"]
@@ -16,7 +16,7 @@ def createInitiativeVariations(numberOf)
         $final_array << ["Initiative #{rand(1..2000)}", "Make it legal for me to drive my #{Faker::Construction.heavy_equipment} across the baseball field!"]
         $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Genetically clone #{Faker::Science.scientist} and send them to #{Faker::Space.planet}!"]
-        $final_array << ["Initiative #{rand(1..2000)}", "Promote Salty Joe to  #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
+        $final_array << ["Initiative #{rand(1..2000)}", "Promote Salty Joe to #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::Books::Lovecraft.fhtagn}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Award #{1..400000} points to #{Faker::Movies::HarryPotter.house}!"]

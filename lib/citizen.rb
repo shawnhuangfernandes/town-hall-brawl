@@ -19,7 +19,7 @@ class Citizen < ActiveRecord::Base
             end
         end
 
-        puts "The iniative that's going to pass is: #{Advocacy.all.first.name} : #{Advocacy.all.first.description}"
+        puts "The initative that's going to pass is: #{Citizen.all.first.initiatives[0].name} : #{Citizen.all.first.initiatives[0].description}"
     end
 
     def self.brawlSession(citizen1, citizen2)
