@@ -1,38 +1,56 @@
 class Citizen < ActiveRecord::Base
     has_many :advocacies # relationship - a citizen has many advocacies
     has_many :initiatives, through: :advocacies # relationship - a citizen has many initiatives through advocacies
-
-    # creates two new advocacy associations linked to random initatives and assigns them to this citizen
+    
+    ACTION_VERB = ["obliterated", "eviscerated", "eliminated", "absolutely mopped the floor with", "bamboozled",
+                   "creamed", "wasted", "destroyed", "physically-vetoed", "pwned", "clobbered", "sliced n' diced",
+                   "annihilated", "vaporized", "wrecked", "crushed", "slayed", "opened a can of whoop-@ss on", 
+                   "thrashed", "whipped", "pulverized" , "blew up", "KABLOOIED", "KBLAMO'd", "totally just HONK HONK'd all over"]
 
     def self.Brawl()
-        until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size == 2 do # we only have two initiatives in play
+        until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size <= 1 do # we only have one initiatives in play
             currentCitizen = Citizen.all.shuffle[0]
             conflictingCitizen = Citizen.all.detect do |otherCitizen|
                 currentCitizen.initiatives != otherCitizen.initiatives
             end
 
-            binding.pry
-
             if conflictingCitizen
                 brawlSession(currentCitizen, conflictingCitizen)
             end
         end
+
+        puts "The iniative that's going to pass is: #{Advocacy.all.first.name} : #{Advocacy.all.first.description}"
     end
 
     def self.brawlSession(citizen1, citizen2)
+        until citizen1.health <= 0 || citizen2.health <= 0
         citizen1.health -= citizen2.strength
         citizen2.health -= citizen1.strength
         citizen1.save
         citizen2.save
+        end
 
         if (citizen1.health > 0 && citizen2.health <= 0)
-            destroy(citizen2.id)
+            destroyCitizen(citizen2)
+            puts "#{citizen1.name} #{ACTION_VERB.sample} #{citizen2.name}!"
         elsif (citizen1.health <= 0 && citizen2.health > 0)
-            destroy(citizen1.id)
+            destroyCitizen(citizen1)
+            puts "#{citizen2.name} #{ACTION_VERB.sample} #{citizen1.name}!"
         elsif (citizen1.health <= 0 && citizen2.health <= 0)
-            destroy(citizen1.id)
-            destroy(citizen2.id)
-        end # neither citizens destroyed each other
+            destroyCitizen(citizen1)
+            destroyCitizen(citizen2)
+            puts "#{citizen1.name} and #{citizen2.name} #{ACTION_VERB.sample} each other!"
+        end
     end
 
+    def self.destroyCitizen(citizen)
+        Advocacy.destroy(citizen.advocacies[0].id)
+        destroy(citizen.id)
+    end
+
+    def self.displayCitizenBeliefs
+        Citizen.all.each do |citizen|
+            puts "#{citizen.name} supports #{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
+        end
+    end
 end
