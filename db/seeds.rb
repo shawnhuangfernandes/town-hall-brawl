@@ -17,7 +17,6 @@ def createInitiativeVariations(numberOf)
         $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Genetically clone #{Faker::Science.scientist} and send them to #{Faker::Space.planet}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Promote Salty Joe to #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
-        $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::Books::Lovecraft.fhtagn}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
         $final_array << ["Initiative #{rand(1..2000)}", "Award #{rand(1..400000)} points to #{Faker::Movies::HarryPotter.house}!"]
 
@@ -41,8 +40,8 @@ def createInitiativesFromTypes(numberOf)
     end
 end
 
-createInitiativeVariations(3)
-createInitiativesFromTypes(10)
+createInitiativeVariations(6)
+createInitiativesFromTypes(15)
 createCitizens(15)
 
 

@@ -16,6 +16,7 @@ class TownHallBrawl
     end
 
     def gameStartup
+        system("clear")
         puts ""
         puts "Welcome to Town Hall Brawl, a game about..."
         puts "friendship"
@@ -32,6 +33,7 @@ class TownHallBrawl
     end
 
     def gameMenuSelection
+        system("clear")
         puts ""
         puts "Game Options (options are the numbers)"
         puts "-----------------------------------"
@@ -54,6 +56,7 @@ class TownHallBrawl
     end
 
     def startGameMenu
+        system("clear")
         puts ""
         puts "Current Brawl Options (options are the numbers)"
         puts "-----------------------------------"
@@ -88,6 +91,7 @@ class TownHallBrawl
     end
 
     def startGameChangeDifficulty
+        system("clear")
         puts ""
         puts "Game Difficulty Options (options are the numbers)"
         puts "NOTE: This resets the entire brawl (including tokens)"
@@ -134,6 +138,7 @@ class TownHallBrawl
     end
 
     def startGameReadOverview
+        system("clear")
         puts ""
         puts "How Town Hall Brawl Works"
         puts "-----------------------------------"
@@ -162,6 +167,7 @@ class TownHallBrawl
     end
 
     def startGameViewParticipants
+        system("clear")
         puts ""
         puts "Current Citizens In The Room"
         puts "-----------------------------------------"
@@ -169,10 +175,17 @@ class TownHallBrawl
         Citizen.displayCitizenBeliefs
 
         puts ""
-        startGameMenu
+        puts "Press any key to go back to the game menu"
+        puts ""
+
+
+        if getUserInput
+            startGameMenu
+        end
     end
 
     def startGameHedgeBetsMenu
+        system("clear")
         puts ""
         puts "Bet Hedging Menu - #{self.tokens} left"
         puts "-----------------------------------"
@@ -209,8 +222,10 @@ class TownHallBrawl
     end
 
     def startGameArrestCitizen
+        system("clear")
         puts "NOTE: This will reduce your available tokens by 1"
         puts "--------------------------------------------------------"
+        puts ""
         puts "type 'q' to go back the the game manu"
         puts "Here's the list of citizens in town hall today:"
         puts ""
@@ -236,6 +251,7 @@ class TownHallBrawl
     end
 
     def startGameConfuseCitizens
+        system("clear")
         puts "NOTE: This will reduce your available tokens by 1"
         puts "--------------------------------------------------------"
         puts ""
@@ -255,7 +271,6 @@ class TownHallBrawl
             startGameConfuseCitizens
         end
         
-
     end
 
     def confuseAllCitizens
@@ -275,16 +290,43 @@ class TownHallBrawl
         Citizen.displayCitizenBeliefs
         
         self.tokens -= 1
+
+        puts "Press any key to go back to the game menu"
+        puts ""
+
+
+        if getUserInput
+            startGameMenu
+        end
     end
 
     def startGameAddAngryCitizen
-        puts "Add A Citizen to the Bloodba- I mean Debate"
+        system("clear")
+        puts "NOTE: This will reduce your available tokens by 1"
         puts "-----------------------------------------------"
+        puts ""
 
+        puts "If you'd like to add a custom citizen to the figh- I mean town hall meeting"
+        puts "Type a new name for your citizen"
+        puts "Or, type 'q' to go back to the menu"
+        puts ""
+
+        newCitizenName = getUserInput
+
+        if newCitizenName == 'q'
+            startGameMenu
+        else
+            newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..75), health: rand(50..150)), 
+                         initiative: Initiative.all.sample)
+            puts "#{newAdvocacy.citizen.name} comes strutting into townhall and announces 'I believe in #{newAdvocacy.initiative.name}': #{newAdvocacy.initiative.description}"
+            puts ""
+            
+            self.tokens -= 1
+        end
     end
 
     def startGameBeginBrawl
-        puts "BGIN BRAWL!"
+        puts "BEGIN BRAWL!"
         # have the user select an initiative by number - the one they think will be the last one
         # run Brawl
         # check to see if they are right
@@ -316,9 +358,8 @@ class TownHallBrawl
             $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::ElectricalComponents.electromechanical}s aren't real. Erase them from the dictionary!"]
             $final_array << ["Initiative #{rand(1..2000)}", "Genetically clone #{Faker::Science.scientist} and send them to #{Faker::Space.planet}!"]
             $final_array << ["Initiative #{rand(1..2000)}", "Promote Salty Joe to #{Faker::Military.air_force_rank} and send him out to #{Faker::Space.star}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "#{Faker::Books::Lovecraft.fhtagn}!"]
             $final_array << ["Initiative #{rand(1..2000)}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
-            $final_array << ["Initiative #{rand(1..2000)}", "Award #{1..400000} points to #{Faker::Movies::HarryPotter.house}!"]
+            $final_array << ["Initiative #{rand(1..2000)}", "Award #{rand(1..400000)} points to #{Faker::Movies::HarryPotter.house}!"]
 
         end
     end

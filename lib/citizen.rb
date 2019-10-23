@@ -50,7 +50,7 @@ class Citizen < ActiveRecord::Base
 
     def self.displayCitizenBeliefs
         Citizen.all.each do |citizen|
-            puts "#{citizen.name} supports #{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
+            puts "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength}) supports #{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
         end
     end
 
