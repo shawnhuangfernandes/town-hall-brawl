@@ -1,10 +1,11 @@
 class TownHallBrawl
     attr_accessor :difficulty, :tokens
 
-    def initialize(tokens = 3, points = 0, difficulty = 1)
+    def initialize(tokens = 3, points = 0, difficulty = 1, gamesLeftToPlay = 5)
         @tokens = tokens
         @points = points
         @difficulty = difficulty
+        @gamesLeftToPlay = gamesLeftToPlay
 
         populateTownHall(6)
     end
@@ -49,6 +50,7 @@ class TownHallBrawl
         case menuSelection
         when '1'
             startGameMenu
+            clearGameStats
         when '2'
             endGame
         else
@@ -324,13 +326,28 @@ class TownHallBrawl
     end
 
     def startGameBeginBrawl
+        brawlIntro
+        input = brawlChooseInitiative
+        beginBrawl(input)
+        
+        
+    end
+
+    def brawlIntro
         system("clear")
         puts ""
         puts "Everybody please take your seats! Deliberations are about to begin"
         puts ""
 
         townHallRandomEvents
+    end
 
+    def townHallRandomEvents
+        # end with a clear
+    end
+
+    def brawlChooseInitiative
+        system("clear")
         puts "Here are the initiatives by name:"
         puts "----------------------------------"
         uniqueInitiativeNames = Citizen.all.map {|citizen| citizen.initiatives[0].name_and_description}.uniq
@@ -344,29 +361,29 @@ class TownHallBrawl
 
         initiativeNumber = getUserInput
 
-        if uniqueInitiativeNames.map {|initiative_string| initiative_string.split[1]}.include?(initiativeNumber)
-            Citizen.brawl
+        if uniqueInitiativeNames.map {|initiative_string| initiative_string.split[1]}.exclude?(initiativeNumber)
+            puts "invalid initiative, please try again!"
+            puts ""
+            brawlChooseInitiative
         else
-            puts "You entered #{initiativeNumber}, which is invalid, try again!"
-
+            initiativeNumber
         end
-        # have the user select an initiative by number - the one they think will be the last one
-        # run Brawl
-        # check to see if they are right
-
-        # if they are, set their points += to token * difficultyModifier
-
-        # if not, they get 0 points
-
-        # ask them if they want to play again? (y/n)
-
-        # y - start again and reset tokens and points and database
-        # n - exit message and end program
-        # else "I don't understand what you mean, so you must want to keep playing" - start again anyway
     end
 
-    def townHallRandomEvents
+    def beginBrawl(initiative_vote)
+            system("clear")
+            winningInitiative = Citizen.brawl
+            if (winningInitiative == initiative_vote)
+                puts ""
+                puts "Congratulations! You picked the winning Initiative"
+                puts "You earned: difficulty (#{self.difficulty}) + difficulty(#{self.difficulty}) * tokens_remaining(#{self.tokens})"
+                puts "Points This Round: #{self.difficulty + self.difficulty * self.tokens}"
+                puts ""
+                self.difficulty + self.difficulty * self.tokens
 
+            else
+                puts "you lost!"
+            end
     end
 
     def endGame
@@ -413,6 +430,15 @@ class TownHallBrawl
         Advocacy.destroy_all
         Citizen.destroy_all
         Initiative.destroy_all
+    end
+
+    def clearGameStats
+        self.tokens = 3
+    end
+
+    def clearMatchStats
+        self.score = 0
+        self.gamesLeftToPlay = 5
     end
 
     def populateTownHall(number_of_citizens)
