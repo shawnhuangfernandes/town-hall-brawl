@@ -54,8 +54,16 @@ class Citizen < ActiveRecord::Base
     end
 
     def self.displayCitizenBeliefs
+        
+        
         Citizen.all.each do |citizen|
-            puts "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength}) supports #{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
+            first_term_length = "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength}) is in favor of".length
+            print "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength})"
+            (55-first_term_length).times do
+                print " "
+            end
+
+            puts "#{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
         end
     end
 

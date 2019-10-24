@@ -1,4 +1,8 @@
+require 'tty-prompt'
+
 class TownHallBrawl
+    $prompt = TTY::Prompt.new
+
     attr_accessor :difficulty, :tokens, :score, :gamesLeftToPlay, :points
 
     def initialize(tokens = 3, points = 0, difficulty = 1, gamesLeftToPlay = 5, score = 0)
@@ -45,106 +49,69 @@ class TownHallBrawl
 
     def gameMenuSelection
         system("clear")
-        puts ""
-        puts "Game Options (options are the numbers)"
-        puts "-----------------------------------"
-        puts ""
-        puts "1. Start Game"
-        puts "2. Stop Playing"
-        puts ""
-        
-        menuSelection = getUserInput
+
+        menuSelection = $prompt.select("Would you like to Play?", ['Yes, I would!', 'NO! Be gone you fiend!'])
 
         case menuSelection
-        when '1'
+        when 'Yes, I would!'
             startGameMenu
             clearGameStats
-        when '2'
+        when 'NO! Be gone you fiend!'
             endGame
-        else
-            puts "Errrr... You typed #{menuSelection}, try again!"
-            gameMenuSelection
         end
     end
 
     def startGameMenu
         system("clear")
         puts ""
-        puts "Current Brawl Options (options are the numbers)"
-        puts "-----------------------------------"
-        puts ""
-        puts "1. Read Overview"
-        puts "2. Change Difficulty (Currently: #{$difficulty_level[self.difficulty - 1]})"
-        puts "3. View Participants"
-        puts "4. Hedge Your Bet (Tokens left: #{self.tokens} Tokens)"
-        puts "5. Begin the Brawl!"
-        puts "6. End Game"
-        puts ""
 
-        menuSelection = getUserInput
+        menuSelection = menuSelection = $prompt.select("Current Town Hall Session Options", ['Game Overview', 'Change Difficulty',
+                                                                                'View Citizens', 'Edit Room', "Start Brawl", 'End Game'])
 
         case menuSelection
-        when '1'
+        when 'Game Overview'
             startGameReadOverview
-        when '2'
+        when 'Change Difficulty'
             startGameChangeDifficulty
-        when '3'
+        when 'View Citizens'
             startGameViewParticipants
-        when '4'
+        when 'Edit Room'
             startGameHedgeBetsMenu
-        when '5'
+        when 'Start Brawl'
             startGameBeginBrawl
-        when '6'
+        when 'End Game'
             endGame
-        else
-            puts "Errrr... You typed #{menuSelection}, try again!"
-            startGameMenu
         end
     end
 
     def startGameChangeDifficulty
         system("clear")
-        puts ""
-        puts "Game Difficulty Options (options are the numbers)"
-        puts "NOTE: This resets the entire brawl (including tokens)"
-        puts "-----------------------------------"
-        puts ""
-        puts "1. Civil (6 people: Score = 6 * token modifier)"
-        puts "2. Tense (10 people: Score = 10 * token modifier)"
-        puts "3. Uncomfortable (15 people: Score = 15 * token modifier)"
-        puts "4. Hostile (20 people: Score = 20 * token modifier)"
-        puts "5. Bad@ss (30 people: Score = 30 * token modifier)"
-        puts "6. Back To Menu (Make No Changes)"
-        puts ""
 
-        menuSelection = getUserInput
+        menuSelection = $prompt.select("Set Difficulty", ['Civil', 'Tense', 'Uncomfortable', 'Hostile', 'Bad@ass', 'Go Back'])
 
         case menuSelection
-        when '1'
+        when 'Civil'
             @difficulty = 1
             populateTownHall(6)
             startGameMenu
-        when '2'
+        when 'Tense'
             @difficulty = 2
             populateTownHall(10)
             startGameMenu
-        when '3'
+        when 'Uncomfortable'
             @difficulty = 3
             populateTownHall(15)
             startGameMenu
-        when '4'
+        when 'Hostile'
             @difficulty = 4
             populateTownHall(20)
             startGameMenu
-        when '5'
+        when 'Bad@ss'
             @difficulty = 5
             populateTownHall(30)
             startGameMenu
-        when '6'
+        when 'Go Back'
             startGameMenu
-        else
-            puts "Errrr... You typed #{menuSelection}, try again!"
-            startGameChangeDifficulty
         end
     end
 
@@ -198,30 +165,20 @@ class TownHallBrawl
     def startGameHedgeBetsMenu
         system("clear")
         puts ""
-        puts "Bet Hedging Menu - #{self.tokens} left"
-        puts "-----------------------------------"
-        puts ""
-        puts "1. Arrest Citizen (remove citizen)"
-        puts "2. Confuse Citizens (randomize all citizens' initiatives)"
-        puts "3. Insert Angry Citizen (create a new strong citizen - random initiative)"
-        puts "4. Back To Game Menu"
-        puts ""
         
         if self.tokens > 0
-            menuSelection = getUserInput
+            menuSelection = $prompt.select("Town Hall 'Pre-Game' Options", ['Arrest A Citizen', 'Confuse All Citizens',
+                                                                    'Insert Angry Citizen', 'Go Back'])
 
             case menuSelection
-            when '1'
+            when 'Arrest A Citizen'
                 startGameArrestCitizen
-            when '2'
+            when 'Confuse All Citizens'
                 startGameConfuseCitizens
-            when '3'
+            when 'Insert Angry Citizen'
                 startGameAddAngryCitizen
-            when '4'
+            when 'Go Back'
                 startGameMenu
-            else
-                puts "Errrr... You typed #{menuSelection}, try again!"
-                startGameHedgeBetsMenu
             end
         else
             puts "You are out of tokens, press any key to go back to the game menu"
