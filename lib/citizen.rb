@@ -24,7 +24,7 @@ class Citizen < ActiveRecord::Base
         if (Citizen.all.count == 0) # if there are no citizens left 
             puts "Well, this is awkward... looks like everyone #{ACTION_VERB.sample} each other. Nobody's left!" # print a message
         else # else if there is more than one citizen left (all with the same initiative)
-            puts "The initative that's going to pass is #{Citizen.all.first.initiatives[0].name} : #{Citizen.all.first.initiatives[0].description}"
+            puts "#{ColorizedString.new("\n\nThe initative that's going to pass is: ").blue}\n#{Citizen.all.first.initiatives[0].name} : #{Citizen.all.first.initiatives[0].description}\n"
             Citizen.all.first.initiatives[0].name.split[1] # grab the name of the initiative that won
         end
     end
@@ -32,8 +32,8 @@ class Citizen < ActiveRecord::Base
     # this method makes two citizens duke it out
     def self.brawlSession(citizen1, citizen2)
         until citizen1.health <= 0 || citizen2.health <= 0 # until either one or both citizens are DEAD
-        citizen1.health -= rand(1..citizen2.strength) # make citizen2 hit citizen1
-        citizen2.health -= rand(1..citizen1.strength) # make citizen1 hit citizen2
+        citizen1.health -= rand(citizen2.strength/3..citizen2.strength) # make citizen2 hit citizen1
+        citizen2.health -= rand(citizen1.strength/3..citizen1.strength) # make citizen1 hit citizen2
         citizen1.save # update their health
         citizen2.save # update their health
         end
@@ -50,6 +50,9 @@ class Citizen < ActiveRecord::Base
             destroyCitizen(citizen2) # destroy citizen 2
             puts "#{citizen1.name} and #{citizen2.name} #{ACTION_VERB.sample} each other!" # display a fun 'outcome' message
         end
+        pid = fork{ exec 'afplay' ,"./sounds/death#{rand(1..14)}.mp3"}
+
+        sleep(1.5)
     end
 
     # this method destroys a citizen and their advocacy

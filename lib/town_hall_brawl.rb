@@ -1,8 +1,11 @@
 require 'tty-prompt' # require for fancy prompting (replaces switch case)
+require 'tty-font' # require for special title fonts
+require 'pastel' # require for coloring text
 
 class TownHallBrawl
     $prompt = TTY::Prompt.new # create new prompt object 
-
+    $font = TTY::Font.new(:doom) # create a new font object
+    $sounds_array = []
     attr_accessor :difficulty, :tokens, :score, :gamesLeftToPlay, :points # accessors for game attributes
 
     # initiatize a game with some starting values (game starts at difficulty 1)
@@ -40,7 +43,27 @@ class TownHallBrawl
 
     # this method prints out an intro message
     def gameIntro
- 
+        system("clear")
+        print_sleep("Our esteemed mayor, ", 1)
+        print_sleep("#{ColorizedString.new(Faker::FunnyName.name).green} of ", 2)
+        print_sleep("#{ColorizedString.new(Faker::Restaurant.name).green} Town has called for a #{ColorizedString.new("town hall meeting").green}!\n", 3)
+        puts_sleep("", 2)
+
+        print_sleep("You know what that means? \n", 2)
+        print_sleep(ColorizedString.new("It's ").red, 1)
+        print_sleep(ColorizedString.new("time ").red, 1)
+        print_sleep(ColorizedString.new("for\n\n").red, 1)
+
+        pastel = Pastel.new
+
+        system("clear")
+
+        print pastel.red($font.write("TOWN "))
+        puts ""
+        print pastel.red($font.write("HALL "))
+        puts ""
+        print pastel.red($font.write("BRAWL"))
+
     end
 
     # this method provides a prompt that determines if the player wants to play or not
@@ -65,11 +88,11 @@ class TownHallBrawl
         puts "#{ColorizedString.new("You have").light_blue} #{self.tokens} tokens #{ColorizedString.new("left.").light_blue}\n\n"
 
         # prompt the user
-        menuSelection = menuSelection = $prompt.select(ColorizedString.new("What would you like to do?").red, ['Game Overview', 'Change Difficulty',
+        menuSelection = menuSelection = $prompt.select(ColorizedString.new("What would you like to do?").red, ['Game Overview (Read Before Playing!)', 'Change Difficulty',
                                                                                 'View Citizens', 'Edit Room', "Start Brawl", 'End Game'])
 
         case menuSelection # handle user response
-        when 'Game Overview' # if they choose to read game overview
+        when 'Game Overview (Read Before Playing!)' # if they choose to read game overview
             startGameReadOverview # 
         when 'Change Difficulty' # if they want to change the difficulty
             startGameChangeDifficulty
@@ -138,7 +161,9 @@ class TownHallBrawl
         #print the information
         puts ColorizedString.new("How Town Hall Brawl Works").blue
         puts "---------------------------------------------------------\n\n"
-        puts "#{ColorizedString.new("Change Cifficulty").light_blue}: How many citizens will be fighting for their initiative - Harder = More Points"
+        puts "#{ColorizedString.new("Town Hall Brawl")} is a probability game where you must guess which initiative will be the last one left after all the citizens brawl it out!\n\n"
+
+        puts "#{ColorizedString.new("Change Cifficulty").light_blue}: How many citizens will be fighting for their initiative - Harder = More Points For That Round"
         puts "#{ColorizedString.new("View Citizens").light_blue}: See all the citizens, how strong they are, and what they support"
         puts "      - This will help you make a decision on what initiative might win out"
         puts "#{ColorizedString.new("Edit Room").light_blue}: Use your tokens to slightly tip the odds in your favor by"
@@ -150,7 +175,7 @@ class TownHallBrawl
         puts ""
         puts ColorizedString.new("Point System").blue
         puts "-----------------------------------"
-        puts "#{ColorizedString.new("If Correct").light_blue}: (self.tokens + self.difficulty**2)**2"
+        puts "#{ColorizedString.new("If Correct").light_blue}: (tokens + difficulty**2)**2"
         puts "#{ColorizedString.new("If Incorrect").light_blue}: 0\n\n"
         
         # provide a single option prompt to allow the user to go back to the current round menu
@@ -298,19 +323,18 @@ class TownHallBrawl
         puts ColorizedString.new("NOTE: This will reduce your available tokens by 1\n\n").light_blue
 
         # prompt user to enter a Citizen name
-        puts "Add a citizen to the 'meeting'"
         print ColorizedString.new("Type a new name for your citizen: ").light_blue
-        puts ""
+        puts "\n"
 
         # prompt the user for the input
         newCitizenName = getUserInput
 
         # create a new citizen through an association
-        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..75), health: rand(50..150)), 
+        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..150), health: rand(50..250)), 
                         initiative: Initiative.all.sample)
 
         # provide a feedback message
-        puts "#{newAdvocacy.citizen.name} comes strutting into town hall and announces 'I believe in #{newAdvocacy.initiative.name}': #{newAdvocacy.initiative.description}\n\n"
+        puts "\n#{newAdvocacy.citizen.name} comes strutting into town hall and announces 'I believe in #{newAdvocacy.initiative.name_and_description}'\n\n"
 
         self.tokens -= 1 # reduce the number of tokens on the current game
 
@@ -372,7 +396,7 @@ class TownHallBrawl
             puts "Points This Round: #{(self.tokens + self.difficulty**2)**2}\n"
             (self.tokens + self.difficulty**2)**2 # return the points they scored modified by the modifier
         else # if the user did not vote for the right initiative
-            puts "You lost!"
+            puts ColorizedString.new("\nYou lost!").red
             puts "Points This Round: 0"
             0 # return 0 points
         end
@@ -388,6 +412,7 @@ end
             puts "You reached the end of the match, you are a champion of democracy!\n\n" # print a 'match end' message
             
             self.score = 0 # reset the score
+            self.gamesLeftToPlay = MAX_ROUNDS
 
             if userSingleOption("Start New Match?", ["Consider me addicted!"]) # navigate the user to the start menu
                 startGameMenu
@@ -481,5 +506,16 @@ end
         initiativeString
     end
 
+    #outputs with a sleep duration at the end
+    def puts_sleep(message, duration)
+        puts message
+        sleep(duration)
+    end
     
+    #prints with a sleep duration at the end
+    def print_sleep(message, duration)
+        print message
+        sleep(duration)
+    end
+
 end

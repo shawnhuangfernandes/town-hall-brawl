@@ -95,6 +95,7 @@ DEPENDENCIES
   catpix_mini
   colorize
   faker
+  pastel
   pry
   rake
   require_all
