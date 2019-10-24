@@ -20,6 +20,10 @@ class TownHallBrawl
     $max_tokens = 4
     MAX_ROUNDS = 5
 
+    def userSingleOption(question, option)
+        $prompt.select(question, [option])
+    end
+
     def getUserInput
         print "Enter your input: "
         gets.chomp
@@ -27,30 +31,52 @@ class TownHallBrawl
 
     def gameStartup
         system("clear")
-        puts ""
-        puts "Welcome to Town Hall Brawl, a game about..."
-        puts "friendship"
-        puts "spaceships"
-        puts "occasionally... Salty Joe"
-        puts "cults centered around food"
-        puts "really adorable violence"
-        puts "and... democracy!"
-        puts "Made by Shawn Huang Fernandes"
-        puts ""
+        sleep(3)
+        puts "Town Hall Meetings are the pinnacle of human evolution"
+        sleep(2)
+        print "Individuals come together"
+        sleep (2)
+        print " from all walks of life"
+        sleep (2)
+        puts " to do what humans do best:"
+        sleep(2)
+        puts "\nCOMPLAIN"
+        sleep (2)
+        puts "\nBut what if we had a different kind of town hall meeting"
+        sleep (3)
+        print "Where things got done, "
+        sleep(2)
+        print "decisions were made"
+        sleep(2)
+        print " and only"
+        sleep(2)
+        print " the greatest,"
+        sleep(2)
+        print " most delicious,"
+        sleep(2.5)
+        print " most disgustingly amazing,"
+        sleep(2)
+        puts " ideas became reality."
+        sleep(2)
+        puts "\nThis isn't just ANY town hall meeting"
+        sleep(2)
+        print "\nTHIS"
+        sleep(2)
+        puts " IS\n\n"
+        sleep(2)
+        puts "TOWN HALL BRAWL!"
+        sleep(2)
+        puts "\nMade by Shawn Huang Fernandes\n"
 
-        puts "Press any key to proceed to the game menu"
-        puts ""
-
-        if getUserInput
-            gameMenuSelection
-        end
+        sleep(4)
+        gameMenuSelection
         
     end
 
     def gameMenuSelection
         system("clear")
 
-        menuSelection = $prompt.select("Would you like to Play?", ['Yes, I would!', 'NO! Be gone you fiend!'])
+        menuSelection = $prompt.select("Would you like to Play Town Hall Brawl?", ['Yes, I would!', 'NO! Be gone you fiend!'])
 
         case menuSelection
         when 'Yes, I would!'
@@ -361,11 +387,9 @@ class TownHallBrawl
             system("clear")
             winningInitiative = Citizen.brawl
             if (winningInitiative == initiative_vote)
-                puts ""
-                puts "Congratulations! You picked the winning Initiative"
+                puts "\nCongratulations! You picked the winning Initiative"
                 puts "Tokens left: #{self.tokens}, Difficulty level: #{self.difficulty} "
-                puts "Points This Round: #{(self.tokens + self.difficulty**2)**2}"
-                puts ""
+                puts "Points This Round: #{(self.tokens + self.difficulty**2)**2}\n"
                 (self.tokens + self.difficulty)**2
             else
                 puts "You lost!"
@@ -375,6 +399,7 @@ class TownHallBrawl
     end
 
     def endGame
+        puts "\nThanks for playing, hope to see you again at our next town hall meeting!"
         exit
     end
 
