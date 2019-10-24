@@ -58,20 +58,22 @@ class Citizen < ActiveRecord::Base
 
         citizens_grouped_by_initiative.each do |citizen|
             first_term_length = "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength}) is in favor of".length
-            print "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength})"
+            print "#{ColorizedString.new(citizen.name).green} (HLTH: #{ColorizedString.new(citizen.health.to_s).blue}/STR: #{ColorizedString.new(citizen.strength.to_s).red})"
             (55-first_term_length).times do
                 print " "
             end
 
-            puts "#{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
+            puts "#{ColorizedString.new(citizen.initiatives[0].name).light_green} : #{citizen.initiatives[0].description}"
         end
     end
 
     def self.returnCitizenBeliefs
-        Citizen.all.map do |citizen|
+        citizens_grouped_by_initiative = Citizen.all.sort_by {|citizen| citizen.initiatives[0].name}
+        
+        citizens_grouped_by_initiative.map do |citizen|
             ending_string = "#{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
-            starting_string = "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength})"
-            (55-starting_string.length).times {ending_string = ending_string.insert(0, ' ')}
+            starting_string = "#{citizen.name} (HLTH: #{citizen.health.to_s}/STR: #{citizen.strength.to_s})"
+            (50-starting_string.length).times {ending_string = ending_string.insert(0, ' ')}
             starting_string + ending_string
         end
     end
