@@ -9,4 +9,7 @@ gem "rake"
 gem "rest-client"
 gem 'colorize'
 gem 'faker'
+gem 'catpix_mini'
+gem 'tty-font'
+gem 'tty-prompt'
 

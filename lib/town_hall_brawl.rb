@@ -77,7 +77,7 @@ class TownHallBrawl
         puts "2. Change Difficulty (Currently: #{$difficulty_level[self.difficulty - 1]})"
         puts "3. View Participants"
         puts "4. Hedge Your Bet (Tokens left: #{self.tokens} Tokens)"
-        puts "5. BEGIN TOWN HALL BRAWL!"
+        puts "5. Begin the Brawl!"
         puts "6. End Game"
         puts ""
 
@@ -123,18 +123,23 @@ class TownHallBrawl
         when '1'
             @difficulty = 1
             populateTownHall(6)
+            startGameMenu
         when '2'
             @difficulty = 2
             populateTownHall(10)
+            startGameMenu
         when '3'
             @difficulty = 3
             populateTownHall(15)
+            startGameMenu
         when '4'
             @difficulty = 4
             populateTownHall(20)
+            startGameMenu
         when '5'
             @difficulty = 5
             populateTownHall(30)
+            startGameMenu
         when '6'
             startGameMenu
         else
@@ -317,7 +322,7 @@ class TownHallBrawl
         puts "-----------------------------------------------"
         puts ""
 
-        puts "If you'd like to add a custom citizen to the figh- I mean town hall meeting"
+        puts "Add a citizen to the 'meeting'"
         puts "Type a new name for your citizen"
         puts "Or, type 'q' to go back to the menu"
         puts ""
@@ -354,17 +359,31 @@ class TownHallBrawl
 
         puts "Your score after the town hall brawl is #{score}."
         self.gamesLeftToPlay -= 1
-        puts "You have #{self.gamesLeftToPlay} rounds left!"
 
-        puts "Press any key to go back to play the next round"
-        self.tokens = MAX_TOKENS
-        populateTownHall
-        puts ""
+        if(self.gamesLeftToPlay < 0)
+            setupForNewGame
+            self.score = 0
+            self.difficulty = 1
+        else
+            setupForNewGame
+        end
 
         if getUserInput
             startGameMenu
+        end  
+    end
+
+    def setupForNewGame
+        if (gamesLeftToPlay < 0)
+            puts "You reached the end of the match, you are a champion of democracy!"
+            puts "Press any key to start a new match!"
+        else
+            puts "You have #{self.gamesLeftToPlay} rounds left!"
+            puts "Press any key to go back to play the next round"
         end
-           
+        self.tokens = MAX_TOKENS
+        populateTownHall(6)
+        puts ""
     end
 
     def brawlIntro
@@ -410,16 +429,19 @@ class TownHallBrawl
             if (winningInitiative == initiative_vote)
                 puts ""
                 puts "Congratulations! You picked the winning Initiative"
-                puts "You earned: difficulty (#{self.difficulty}) + difficulty(#{self.difficulty}) * tokens_remaining(#{self.tokens})"
-                puts "Points This Round: #{self.difficulty + self.difficulty * self.tokens}"
+                puts "Tokens left: #{self.tokens}, Difficulty level: #{self.difficulty} "
+                puts "Points This Round: #{(self.tokens + self.difficulty**2)**2}"
                 puts ""
-                self.difficulty + self.difficulty * self.tokens
-
+                (self.tokens + self.difficulty)**2
             else
                 puts "You lost!"
                 puts "Points This Round: 0"
                 0
             end
+    end
+
+    def finishedMatch
+        
     end
 
     def endGame
