@@ -53,10 +53,10 @@ class Citizen < ActiveRecord::Base
         destroy(citizen.id)
     end
 
-    def self.displayCitizenBeliefs
-        
-        
-        Citizen.all.each do |citizen|
+    def self.displayCitizenBeliefs   
+        citizens_grouped_by_initiative = Citizen.all.sort_by {|citizen| citizen.initiatives[0].name}
+
+        citizens_grouped_by_initiative.each do |citizen|
             first_term_length = "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength}) is in favor of".length
             print "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength})"
             (55-first_term_length).times do
@@ -67,11 +67,20 @@ class Citizen < ActiveRecord::Base
         end
     end
 
+    def self.returnCitizenBeliefs
+        Citizen.all.map do |citizen|
+            ending_string = "#{citizen.initiatives[0].name} : #{citizen.initiatives[0].description}"
+            starting_string = "#{citizen.name} (HLTH: #{citizen.health}/STR: #{citizen.strength})"
+            (55-starting_string.length).times {ending_string = ending_string.insert(0, ' ')}
+            starting_string + ending_string
+        end
+    end
+
     def self.getCitizenNames
         Citizen.all.map {|citizen| citizen.name}
     end
 
-    def self.doSomePolitics
+    def self.randomizeInitiatives
         Advocacy.all.each do |advocacy| 
             advocacy.initiative = Initiative.all.sample
             advocacy.save

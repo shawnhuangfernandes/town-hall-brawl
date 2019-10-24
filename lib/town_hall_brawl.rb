@@ -12,12 +12,12 @@ class TownHallBrawl
         @difficulty = difficulty
         @gamesLeftToPlay = gamesLeftToPlay
 
-        populateTownHall(6)
+        populateTownHall(10)
     end
     
     $final_array = []
     $difficulty_level = ["Civil", "Tense", "Uncomfortable", "Hostile", "Bad@ss"]
-    MAX_TOKENS = 3
+    $max_tokens = 4
     MAX_ROUNDS = 5
 
     def getUserInput
@@ -63,9 +63,10 @@ class TownHallBrawl
 
     def startGameMenu
         system("clear")
-        puts ""
+        
+        puts "Current Game\n#{gamesLeftToPlay} games left until end of match\n"
 
-        menuSelection = menuSelection = $prompt.select("Current Town Hall Session Options", ['Game Overview', 'Change Difficulty',
+        menuSelection = menuSelection = $prompt.select("What would you like to do?", ['Game Overview', 'Change Difficulty',
                                                                                 'View Citizens', 'Edit Room', "Start Brawl", 'End Game'])
 
         case menuSelection
@@ -92,23 +93,28 @@ class TownHallBrawl
         case menuSelection
         when 'Civil'
             @difficulty = 1
-            populateTownHall(6)
+            populateTownHall(10)
+            $max_tokens = 4
             startGameMenu
         when 'Tense'
             @difficulty = 2
-            populateTownHall(10)
+            populateTownHall(13)
+            $max_tokens = 6
             startGameMenu
         when 'Uncomfortable'
             @difficulty = 3
-            populateTownHall(15)
+            populateTownHall(20)
+            $max_tokens = 8
             startGameMenu
         when 'Hostile'
             @difficulty = 4
-            populateTownHall(20)
+            populateTownHall(30)
+            $max_tokens = 10
             startGameMenu
         when 'Bad@ss'
             @difficulty = 5
-            populateTownHall(30)
+            populateTownHall(45)
+            $max_tokens = 12
             startGameMenu
         when 'Go Back'
             startGameMenu
@@ -192,35 +198,26 @@ class TownHallBrawl
         system("clear")
         puts "NOTE: This will reduce your available tokens by 1"
         puts "--------------------------------------------------------"
-        puts ""
-        puts "type 'q' to go back the the game manu"
-        puts "Here's the list of citizens in town hall today:"
-        puts ""
-
-        Citizen.displayCitizenBeliefs
 
         puts ""
-        puts "Who do you want to arrest? They all look like scumbags to me..."
-        puts ""
 
-        citizenNameRequest = getUserInput
-
-        if citizenNameRequest == 'q'
+        citizenNameRequest = $prompt.select("Who do you want to arrest? They ALL look like scumbags...", ['Go Back'] + Citizen.returnCitizenBeliefs, per_page: (['Go Back'] + Citizen.returnCitizenBeliefs).size)
+        citizenName = citizenNameRequest[0..citizenNameRequest.index('(')-2]
+        if citizenNameRequest == 'Go Back'
             puts ""
             startGameMenu
-        elsif Citizen.getCitizenNames.include?(citizenNameRequest)
-            puts "#{citizenNameRequest} was dragged out of town hall by the police!"
+            binding.pry
+        elsif Citizen.getCitizenNames.include?(citizenName)
+            system("clear")
+            puts "#{citizenName} was dragged out of town hall by the police! Awkward... \n"
             
-            Citizen.find_by(name: citizenNameRequest).advocacies[0].destroy
-            Citizen.find_by(name: citizenNameRequest).destroy
+            Citizen.find_by(name: citizenName).advocacies[0].destroy
+            Citizen.find_by(name: citizenName).destroy
             self.tokens -= 1
             
             if getUserInput
                 startGameMenu
             end
-        else
-            puts "#{citizenNameRequest} isn't in Town Hall today, lucky biscuit. Pick again!"
-            startGameArrestCitizen
         end
     end
 
@@ -230,37 +227,37 @@ class TownHallBrawl
         puts "--------------------------------------------------------"
         puts ""
 
-        puts "Would you like to confuse all the citizens? (re-roll their initiatives)"
-        puts "type 'y' for YES or 'n' for NO (go back to menu)"
-
-        confuseCitizens = getUserInput
+        confuseCitizens = $prompt.select("Confuse All The Citizens (Re-roll Initiatives)", ['Yes', 'No'])
 
         case confuseCitizens
-        when 'y'
+        when 'Yes'
             confuseAllCitizens
-        when 'n'
+        when 'No'
             startGameMenu
-        else
-            puts "You said #{confuseCitizens}, which is invalid, try again!"
-            startGameConfuseCitizens
-        end
-        
+        end   
     end
 
     def confuseAllCitizens
         puts "All the citizens in town hall came in with these beliefs"
         puts ""
+        sleep(1)
         Citizen.displayCitizenBeliefs
         puts ""
-        Citizen.doSomePolitics
+        Citizen.randomizeInitiatives
         puts "You confuse them with poltical jargon like:"
         puts "#{Faker::Marketing.buzzwords}"
+        sleep(1)
         puts "#{Faker::Marketing.buzzwords}"
+        sleep(1)
         puts "#{Faker::Marketing.buzzwords}"
+        sleep(1)
         puts "#{Faker::Marketing.buzzwords}" 
+        sleep(1)
         puts ""
         puts "Now their beliefs are:"
         puts ""
+        sleep(1)
+
         Citizen.displayCitizenBeliefs
         
         self.tokens -= 1
@@ -281,30 +278,24 @@ class TownHallBrawl
 
         puts "Add a citizen to the 'meeting'"
         puts "Type a new name for your citizen"
-        puts "Or, type 'q' to go back to the menu"
         puts ""
 
         newCitizenName = getUserInput
 
-        if newCitizenName == 'q'
+        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..75), health: rand(50..150)), 
+                        initiative: Initiative.all.sample)
+        puts "#{newAdvocacy.citizen.name} comes strutting into town hall and announces 'I believe in #{newAdvocacy.initiative.name}': #{newAdvocacy.initiative.description}"
+        puts ""
+
+        self.tokens -= 1
+
+        puts "Press any key to go back to the game menu"
+        puts ""
+
+        if getUserInput
             startGameMenu
-        else
-            newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..75), health: rand(50..150)), 
-                         initiative: Initiative.all.sample)
-            puts "#{newAdvocacy.citizen.name} comes strutting into townhall and announces 'I believe in #{newAdvocacy.initiative.name}': #{newAdvocacy.initiative.description}"
-            puts ""
-
-            puts "Press any key to go back to the game menu"
-            puts ""
-    
-            self.tokens -= 1
-
-            if getUserInput
-                startGameMenu
-            end
-            
-
         end
+        
     end
 
     def startGameBeginBrawl
@@ -338,7 +329,7 @@ class TownHallBrawl
             puts "You have #{self.gamesLeftToPlay} rounds left!"
             puts "Press any key to go back to play the next round"
         end
-        self.tokens = MAX_TOKENS
+        self.tokens = $max_tokens
         populateTownHall(6)
         puts ""
     end
@@ -358,26 +349,12 @@ class TownHallBrawl
 
     def brawlChooseInitiative
         system("clear")
-        puts "Here are the initiatives by name:"
-        puts "----------------------------------"
-        uniqueInitiativeNames = Citizen.all.map {|citizen| citizen.initiatives[0].name_and_description}.uniq
-        uniqueInitiativeNames.each do |initiative_string|
-            puts initiative_string
-        end
 
-        puts ""
-        puts "Enter the initiative's number (e.g 1328) which you think will win"
-        puts ""
+        uniqueInitiatives = Advocacy.all.map {|advocacy| "#{advocacy.initiative.name}: #{advocacy.initiative.description}"}.uniq
 
-        initiativeNumber = getUserInput
+        initiativeNumber = $prompt.select("Vote for an initiative", uniqueInitiatives, per_page: uniqueInitiatives.size)
 
-        if uniqueInitiativeNames.map {|initiative_string| initiative_string.split[1]}.exclude?(initiativeNumber)
-            puts "invalid initiative, please try again!"
-            puts ""
-            brawlChooseInitiative
-        else
-            initiativeNumber
-        end
+        initiativeNumber[0...initiativeNumber.index(':')]
     end
 
     def beginBrawl(initiative_vote)
@@ -395,10 +372,6 @@ class TownHallBrawl
                 puts "Points This Round: 0"
                 0
             end
-    end
-
-    def finishedMatch
-        
     end
 
     def endGame
@@ -420,7 +393,6 @@ class TownHallBrawl
             $final_array << ["#{assignRandomInitiativeNumber}", "Reclaim the #{Faker::Games::Zelda.item} from those pesky #{Faker::Company.profession}s in #{Faker::Games::Zelda.location}!"]
             $final_array << ["#{assignRandomInitiativeNumber}", "Award #{rand(1..400000)} points to #{Faker::Movies::HarryPotter.house}!"]
             $final_array << ["#{assignRandomInitiativeNumber}", "All #{Faker::Creature::Animal.name}s should be knighted!"]
-            $final_array << ["#{assignRandomInitiativeNumber}", "Those citizens wearing or having worn highly reflective sunglasses after sundown in the summer while standing in or near the front row of a concert (rock or otherwise) shall be asked to reimburse the artists responsible for the concert in a monetary amount equivalent to or exceeding the correlated emotional damages incurred by the artist from being coerced into the sightline of a person of a demonstrably higher level of cool than themselves."]
         end
     end
 
@@ -448,7 +420,7 @@ class TownHallBrawl
     end
 
     def clearGameStats
-        self.tokens = MAX_TOKENS
+        self.tokens = $max_tokens
     end
 
     def clearMatchStats
