@@ -163,7 +163,7 @@ class TownHallBrawl
         puts "---------------------------------------------------------\n\n"
         puts "#{ColorizedString.new("Town Hall Brawl")} is a probability game where you must guess which initiative will be the last one left after all the citizens brawl it out!\n\n"
 
-        puts "#{ColorizedString.new("Change Cifficulty").light_blue}: How many citizens will be fighting for their initiative - Harder = More Points For That Round"
+        puts "#{ColorizedString.new("Change Difficulty").light_blue}: How many citizens will be fighting for their initiative - Harder = More Points For That Round"
         puts "#{ColorizedString.new("View Citizens").light_blue}: See all the citizens, how strong they are, and what they support"
         puts "      - This will help you make a decision on what initiative might win out"
         puts "#{ColorizedString.new("Edit Room").light_blue}: Use your tokens to slightly tip the odds in your favor by"
