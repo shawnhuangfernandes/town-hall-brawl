@@ -88,13 +88,13 @@ class TownHallBrawl
         puts "#{ColorizedString.new("You have").light_blue} #{self.tokens} tokens #{ColorizedString.new("left.").light_blue}\n\n"
 
         # prompt the user
-        menuSelection = menuSelection = $prompt.select(ColorizedString.new("What would you like to do?").red, ['Game Overview (Read Before Playing!)', 'Change Difficulty',
+        menuSelection = menuSelection = $prompt.select(ColorizedString.new("What would you like to do?").red, ['Game Overview (Read Before Playing!)', "Change Difficulty (currently #{$difficulty_level[self.difficulty-1]})",
                                                                                 'View Citizens', 'Edit Room', "Start Brawl", 'End Game'])
 
         case menuSelection # handle user response
         when 'Game Overview (Read Before Playing!)' # if they choose to read game overview
             startGameReadOverview # 
-        when 'Change Difficulty' # if they want to change the difficulty
+        when "Change Difficulty (currently #{$difficulty_level[self.difficulty-1]})" # if they want to change the difficulty
             startGameChangeDifficulty
         when 'View Citizens' # if they want to see the citizen list in the current round
             startGameViewParticipants
@@ -409,8 +409,9 @@ end
 
     # this sets up a new game
     def setupForNewGame
-        self.tokens = $max_tokens # reset the tokens 
+        self.tokens = 4 # reset the tokens 
         self.difficulty = 1 # reset the difficulty
+
         populateTownHall(10) # re-populate the town hall with the easy difficulty
         
         if (gamesLeftToPlay < 0) # if there are no more games to play (match is over)
