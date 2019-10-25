@@ -330,7 +330,7 @@ class TownHallBrawl
         newCitizenName = getUserInput
 
         # create a new citizen through an association
-        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..150), health: rand(50..250)), 
+        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..120), health: rand(50..120)), 
                         initiative: Initiative.all.sample)
 
         # provide a feedback message
@@ -364,12 +364,6 @@ class TownHallBrawl
         puts ""
         puts "Everybody please take your seats! Deliberations are about to begin"
         puts ""
-
-        townHallRandomEvents # throw in some mad lib messages to set the mood
-    end
-
-    def townHallRandomEvents
-        # end with a clear
     end
 
     # this method lets a user choose an initiative to vote for
@@ -380,15 +374,26 @@ class TownHallBrawl
         uniqueInitiatives = Advocacy.all.map {|advocacy| "#{advocacy.initiative.name}: #{advocacy.initiative.description}"}.uniq
 
         # prompt the user with a list of initiatives to vote for
-        initiativeNumber = $prompt.select("Vote for an initiative", uniqueInitiatives, per_page: uniqueInitiatives.size)
+        initiativeNumber = $prompt.select("Vote for an initiative", ['Go Back'] + uniqueInitiatives, per_page: uniqueInitiatives.size + 1)
 
-        initiativeNumber[0...initiativeNumber.index(':')] # returns the user's choice and grab only the "Initiatve XXXX" portion of it
+        if initiativeNumber == 'Go Back'
+            startGameMenu
+        end
+
+        initiativeNumber[0...initiativeNumber.index(':')].split[1] # returns the user's choice and grab only the "Initiatve XXXX" portion of it
     end
 
     # this method begins a brawl given a vote
     def beginBrawl(initiative_vote)
         system("clear") # clear console
+        puts "Town hall starting line up: \n\n"
+        Citizen.displayCitizenBeliefs
+
+        puts "\n\n"
+
         winningInitiative = Citizen.brawl # run brawl and store the winning initiative
+
+        puts "\nYou voted for Initiative #{initiative_vote}."
         if (winningInitiative == initiative_vote) # if the winning initiatve matches the initiative that user voted for
             # congratulate the winning initiative
             puts "\nCongratulations! You picked the winning Initiative" 

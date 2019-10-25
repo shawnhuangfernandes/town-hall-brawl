@@ -32,8 +32,8 @@ class Citizen < ActiveRecord::Base
     # this method makes two citizens duke it out
     def self.brawlSession(citizen1, citizen2)
         until citizen1.health <= 0 || citizen2.health <= 0 # until either one or both citizens are DEAD
-        citizen1.health -= rand(citizen2.strength/3..citizen2.strength) # make citizen2 hit citizen1
-        citizen2.health -= rand(citizen1.strength/3..citizen1.strength) # make citizen1 hit citizen2
+        citizen1.health -= rand(citizen2.strength/1.5..citizen2.strength) # make citizen2 hit citizen1
+        citizen2.health -= rand(citizen1.strength/1.5..citizen1.strength) # make citizen1 hit citizen2
         citizen1.save # update their health
         citizen2.save # update their health
         end
