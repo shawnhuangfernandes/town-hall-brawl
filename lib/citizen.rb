@@ -10,7 +10,7 @@ class Citizen < ActiveRecord::Base
 
     # this class method makes all the citizens with conflicting initiatives delete each other (fight) until only 1 initiative remains
     def self.brawl()
-        until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size <= 1 do # we only have one initiatives in play
+        until Advocacy.all.map {|advocacy| advocacy.initiative.name}.uniq.size <= 1 do # until we only have one initiative in play
             currentCitizen = Citizen.all.shuffle.first # randomize the list of citizens and grab the first in the list
             conflictingCitizen = Citizen.all.detect do |otherCitizen| # find the first citizen who has a conflicting initiative
                 currentCitizen.initiatives != otherCitizen.initiatives

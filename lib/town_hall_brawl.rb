@@ -46,7 +46,7 @@ class TownHallBrawl
         system("clear")
         print_sleep("Our esteemed mayor, ", 1)
         print_sleep("#{ColorizedString.new(Faker::FunnyName.name).green} of ", 2)
-        print_sleep("#{ColorizedString.new(Faker::Restaurant.name).green} Town has called for a #{ColorizedString.new("town hall meeting").green}!\n", 3)
+        print_sleep("#{ColorizedString.new("#{Faker::Restaurant.name} Town").green} has called for a #{ColorizedString.new("town hall meeting").green}!\n", 3)
         puts_sleep("", 2)
 
         print_sleep("You know what that means? \n", 2)
@@ -330,7 +330,7 @@ class TownHallBrawl
         newCitizenName = getUserInput
 
         # create a new citizen through an association
-        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(35..120), health: rand(50..120)), 
+        newAdvocacy = Advocacy.create(citizen: Citizen.create(name: newCitizenName, strength: rand(20..75), health: rand(50..120)), 
                         initiative: Initiative.all.sample)
 
         # provide a feedback message
